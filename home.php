@@ -1,7 +1,7 @@
 <?php
 session_start();
     if(!$_SESSION['usersmail']){
-        //header('location: home.php');
+        
     }
 ?>
 <!DOCTYPE html>

@@ -7,49 +7,6 @@
   $database="csmfm";
   $message ="";
 
-try {
-  $connection = new PDO("mysql:host=$host; dbname=$database",$username,$password);
-
-  $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-
-  if(isset($_POST["valider"]))
-  {
-    if( empty($_POST["usersmail"]) AND empty($_POST["userspwd"]))
-    {
-      $message = '<label>REQUIRED</label>';
-    }
-    else
-    {
-      $query = "SELECT * FROM users WHERE usersmail = :usersmail";
-      $statement = $connection->prepare($query);
-      $statement->execute(array(
-        'usersmail' => $_POST["usersmail"]
-      ));
-
-      $result = $statement->fetch();
-      if($result === false){
-        $isPasswordCorrect = false;   
-      } else {
-        $isPasswordCorrect = password_verify($_POST['userspwd'], $result['userspwd']);
-      }
-
-      if($isPasswordCorrect)
-      {
-        $_SESSION["usersmail"] = $_POST["usersmail"];
-        header("location: home.php");
-      }
-      else
-      {
-        $message = '<label>username or password is wrong</label>';
-        echo $message;
-      }
-    }
-  }
-}
-    catch(PDOException $error) {
-        $message = $error->getMessage();
-    }
 
 ?>
 <!DOCTYPE html>
@@ -75,6 +32,54 @@ try {
                       <input type="password" name="userspwd" class="form-control" placeholder="password" required="required" autocomplete="off">
                   <br>
                   <button class="w-80 btn btn-lg btn-primary" type="submit" name="valider">Connexion</button>
+                  <p>
+  <?php 
+
+    try {
+  $connection = new PDO("mysql:host=$host; dbname=$database",$username,$password);
+
+  $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+  if(isset($_POST["valider"]))
+  {
+    if( empty($_POST["usersmail"]) AND empty($_POST["userspwd"]))
+    {
+      $message = '<label>REQUIRED</label>';
+      echo $message;
+    }
+    else
+    {
+      $query = "SELECT * FROM users WHERE usersmail = :usersmail";
+      $statement = $connection->prepare($query);
+      $statement->execute(array(
+        'usersmail' => $_POST["usersmail"]
+      ));
+
+      $result = $statement->fetch();
+      if($result === false){
+        $isPasswordCorrect = false;   
+      } else {
+        $isPasswordCorrect = password_verify($_POST['userspwd'], $result['userspwd']);
+      }
+
+      if($isPasswordCorrect)
+      {
+        $_SESSION["usersmail"] = $_POST["usersmail"];
+        header("location: home.php");
+      }
+      else
+      {
+        $message = '<label>votre email ou mot de passe est incorrect</label>';
+       echo $message;
+      }
+    }
+  }
+}
+    catch(PDOException $error) {
+        $message = $error->getMessage();
+    }
+?></p>
                   
             </form>
         </main>
